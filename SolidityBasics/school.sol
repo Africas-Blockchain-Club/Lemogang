@@ -16,48 +16,41 @@ contract school {
     }
 }
 
-contract WTC is school {
-     struct Student {
+contract WTC {
+     struct wtcStudentInfo {
         string name;
-        uint standard;
+        uint level;
     }
 
-    mapping(uint => Student) public students;
+    mapping(uint => wtcStudentInfo) public wtcStudents;
 
-    constructor(string memory _schoolName) school(_schoolName) {
-        
+    function addStudent(uint _id, string calldata _name, uint _level) public {
+        // WTC addStudent
+        wtcStudents[_id] = wtcStudentInfo(_name, _level );
     }
 
-    function addStudent(uint _id, string calldata _name, uint _standard) public {
-        students[_id] = Student(_name, _standard );
-    }
-
-    function getStudent(uint _id) public view returns (string memory, uint ) {
-        Student memory s = students[_id];
-        return (s.name, s.standard );
+    function getWtcStudent(uint _id) public view returns (string memory, uint ) {
+        wtcStudentInfo memory s = wtcStudents[_id];
+        return (s.name, s.level );
     }
 }
 
-contract ABC is school {
-     struct Student {
+contract ABC {
+     struct abcStudentInfo {
         string name;
-        string level;
+        string standard;
         
     }
 
-    mapping(uint => Student) public students;
+    mapping(uint => abcStudentInfo) public abcStudents;
 
-    constructor(string memory _schoolName) school(_schoolName) {
-        
+    function addStudent(uint _id, string calldata _name, string calldata _standard) public {
+        abcStudents[_id] = abcStudentInfo(_name , _standard);
     }
 
-    function addStudent(uint _id, string calldata _name, string calldata _level) public {
-        students[_id] = Student(_name , _level);
-    }
-
-    function getStudent(uint _id) public view returns (string memory, string memory) {
-        Student memory s = students[_id];
-        return (s.name, s.level);
+    function getAbcStudent(uint _id) public view returns (string memory, string memory) {
+        abcStudentInfo memory s = abcStudents[_id];
+        return (s.name, s.standard);
     }
 }
 
@@ -80,25 +73,21 @@ contract AdminControl {
 
 // link both schools together where the admin can add students to either school
 
-contract is ABC,WTC,AdminControl{
+contract fullSystem is school, ABC, WTC, AdminControl {
 
-    constructor(string _schoolName)
-        ABC(_schoolName)
-        WTC(_schoolName)
+    constructor(string memory _schoolName)
+        school(_schoolName)
         AdminControl(){
     }
 
-
-    function getFullABCDetails(uint _id) public view returns(string memory name, string memory standard, string memory school, address admin) {
-        return getABCDetails(_id);
+    function getFullWTCDetails(uint _id) public view returns(string memory name, uint256 level , string memory, address) {
+        WTC.wtcStudentInfo memory s = wtcStudents[_id];
+        return (s.name, s.level, getSchoolName(), admin); 
     }
 
-    function getFullWTCDetails(uint _id) public view returns(string memory name, uint256 level, string memory school, address admin) {
-        return getWTCDetails(_id);
+    function getFullABCDetails(uint _id) public view returns(string memory name, string memory standard ,string memory, address) {
+        ABC.abcStudentInfo memory s = abcStudents[_id]; 
+        return (s.name, s.standard , getSchoolName(), admin);  
     }
 
 }
-
-
-
-
